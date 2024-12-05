@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生日快乐！</title>
+  <style>
+    :root {
+      --pink-light: #ffe6f0;
+      --pink-medium: #ffb6d3;
+      --pink-dark: #ff69b4;
+      --green-light: #e6ffe6;
+      --green-medium: #b6ffb6;
+      --green-dark: #90EE90;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, var(--pink-light) 0%, var(--green-light) 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      perspective: 1000px;
+    }
+
+    .main-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* 3D翻转卡片效果 */
+    .card-3d {
+      width: 100%;
+      height: 400px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1s;
+      margin: 50px 0;
+    }
+
+    .card-3d:hover {
+      transform: rotateY(180deg);
+    }
+
+    .card-front,
+    .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+    }
+
+    .card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(45deg, var(--pink-medium), var(--green-medium));
+    }
+
+    /* 心跳头像 */
+    .profile-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      margin: 20px auto;
+    }
+
+    .profile-photo {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 8px solid var(--pink-medium);
+      object-fit: cover;
+      animation: heartbeat 1.5s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0% {
+        transform: scale(1);
+      }
+
+      14% {
+        transform: scale(1.1);
+      }
+
+      28% {
+        transform: scale(1);
+      }
+
+      42% {
+        transform: scale(1.1);
+      }
+
+      70% {
+        transform: scale(1);
+      }
+    }
+
+    /* 打字机效果文字 */
+    .typing-text {
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 3px solid var(--pink-dark);
+      animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+      font-size: 1.5rem;
+      color: var(--pink-dark);
+      margin: 20px 0;
+    }
+
+    @keyframes typing {
+      from {
+        width: 0
+      }
+
+      to {
+        width: 100%
+      }
+    }
+
+    @keyframes blink-caret {
+
+      from,
+      to {
+        border-color: transparent
+      }
+
+      50% {
+        border-color: var(--pink-dark);
+      }
+    }
+
+    /* 漂浮的爱心 */
+    .floating-hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--pink-medium);
+      transform: rotate(45deg);
+      animation: floatUp 4s linear infinite;
+      opacity: 0;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: inherit;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      left: -10px;
+    }
+
+    .heart::after {
+      top: -10px;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(100vh) rotate(45deg) scale(0);
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 0.8;
+      }
+
+      100% {
+        transform: translateY(-100vh) rotate(45deg) scale(1);
+        opacity: 0;
+      }
+    }
+
+    /* 照片墙 */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      margin: 40px 0;
+    }
+
+    .memory-card {
+      position: relative;
+      height: 200px;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .memory-card:hover {
+      transform: scale(1.05);
+    }
+
+    .memory-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .memory-card:hover img {
+      transform: scale(1.1);
+    }
+
+    .memory-text {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .memory-card:hover .memory-text {
+      transform: translateY(0);
+    }
+
+    /* 祝福语卡片 */
+    .wish-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 40px 0;
+    }
+
+    .wish-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+
+    .wish-card:hover {
+      transform: translateZ(20px) rotateX(10deg) rotateY(10deg);
+    }
+
+    .wish-title {
+      font-size: 1.2rem;
+      color: var(--pink-dark);
+      margin-bottom: 10px;
+    }
+
+    .wish-content {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* 音乐播放器 */
+    .music-player {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 50%;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      z-index: 1000;
+    }
+
+    .music-note {
+      font-size: 24px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="floating-hearts"></div>
+
+  <div class="main-container">
+    <!-- 3D翻转卡片 -->
+    <div class="card-3d">
+      <div class="card-front">
+        <div class="profile-container">
+          <img src="/api/placeholder/250/250" alt="wpg's phto" class="profile-photo">
+        </div>
+        <div class='typing-text'>
+          <p>
+            将你的手指或鼠标放在上面
+          </p>
+        </div>
+        <div class="typing-text">
+          <h1>shengrikuaile happi birthday!!ada bug hhh</h1>
+        </div>
+      </div>
+      <div class="card-back">
+        <h2 style="color: white; font-size: 2rem; text-align: center;">
+          愿你的生日充满欢乐与惊喜<br>
+          ♥ 永远开心 ♥
+        </h2>
+      </div>
+    </div>
+
+    <!-- 祝福语卡片墙 -->
+    <div class="wish-cards">
+      <div class="wish-card">
+        <h3 class="wish-title">♥ 给最特别的你</h3>
+        <p class="wish-content">
+          在这特别的日子里，愿你像清晨的阳光般温暖，
+          像春天的花朵般绚丽，像夏日的微风般轻盈，
+          像秋天的果实般甜美，像冬日的暖阳般温馨。
+          (generated by cgpt)
+          我的文笔没有酱好🌚🌚
+        </p>
+      </div>
+      <div class="wish-card">
+        <h3 class="wish-title">♥ selamat hari jadi ♥</h3>
+        <p class="wish-content">
+          nengbuneng songwo dian qian(bushi)
+        </p>
+      </div>
+      <div class="wish-card">
+        <h3 class="wish-title">♥ 生日愿望</h3>
+        <p class="wish-content">
+          祝你：
+          心想事成，梦想成真
+          笑容常在，幸福相伴
+          平安喜乐，无忧无虑
+          永远美丽，永远开心
+        </p>
+      </div>
+    </div>
+
+    <!-- 照片墙 -->
+    <div class="gallery">
+      <div class="memory-card">
+        <img src="/api/placeholder/200/200" alt="美好回忆">
+        <div class="memory-text">我们的第一张合照</div>
+      </div>
+      <!-- 可以添加更多照片 -->
+    </div>
+  </div>
+
+  <!-- 音乐播放器 -->
+  <div class="music-player">
+    <div class="music-note">♪</div>
+  </div>
+
+  <script>
+    // 创建漂浮的爱心
+    function createHearts() {
+      const container = document.querySelector('.floating-hearts');
+      const createHeart = () => {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        container.appendChild(heart);
+        setTimeout(() => heart.remove(), 5000);
+      };
+      setInterval(createHeart, 300);
+    }
+
+    // 初始化
+    createHearts();
+
+    // 音乐播放控制
+    const musicPlayer = document.querySelector('.music-player');
+    const birthdaySong = new Audio('happy-birthday.mp3');
+    birthdaySong.loop = true;
+
+    musicPlayer.addEventListener('click', () => {
+      if (birthdaySong.paused) {
+        birthdaySong.play();
+        musicPlayer.style.backgroundColor = var(--pink - medium);
+      } else {
+        birthdaySong.pause();
+        musicPlayer.style.backgroundColor = 'white';
+      }
+    });
+  </script>
+</body>
+
+</html>
